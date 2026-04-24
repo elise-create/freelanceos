@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreelanceOS — Gérez votre activité, librement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f5f1eb;
+    --cream: #ede8df;
+    --accent: #c8441a;
+    --accent2: #2d5016;
+    --gold: #c9a84c;
+    --muted: #7a7569;
+    --white: #fefcf8;
+    --border: #d9d3c7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: .4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(245,241,235,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 800; font-size: 1.5rem;
+    letter-spacing: -0.03em; color: var(--ink);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+  nav ul a { text-decoration: none; color: var(--muted); font-size: .9rem; font-weight: 500; transition: color .2s; }
+  nav ul a:hover { color: var(--ink); }
+
+  .nav-cta {
+    background: var(--ink); color: var(--paper);
+    padding: .65rem 1.5rem; border-radius: 2rem;
+    text-decoration: none; font-size: .9rem; font-weight: 500;
+    transition: background .2s, transform .15s;
+  }
+  .nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 10rem 4rem 6rem;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; top: -10%; right: -5%;
+    width: 55%; height: 110%;
+    background: radial-gradient(ellipse at 60% 40%, #d4c9b8 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: var(--cream); border: 1px solid var(--border);
+    border-radius: 2rem; padding: .4rem 1rem;
+    font-size: .8rem; font-weight: 500; color: var(--muted);
+    margin-bottom: 2rem; width: fit-content;
+  }
+  .hero-badge::before { content: '●'; color: var(--accent2); font-size: .5rem; }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    font-weight: 800; line-height: 0.95;
+    letter-spacing: -0.04em;
+    max-width: 14ch;
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 em {
+    font-style: italic; font-weight: 300;
+    color: var(--accent);
+  }
+
+  .hero p {
+    max-width: 48ch; font-size: 1.15rem;
+    color: var(--muted); line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    padding: 1rem 2.5rem; border-radius: 2rem;
+    text-decoration: none; font-size: 1rem; font-weight: 500;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 24px rgba(200,68,26,.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,68,26,.4); }
+
+  .btn-ghost {
+    color: var(--ink); font-size: .95rem; font-weight: 500;
+    text-decoration: none; display: flex; align-items: center; gap: .5rem;
+    transition: gap .2s;
+  }
+  .btn-ghost:hover { gap: .8rem; }
+
+  .hero-stats {
+    display: flex; gap: 4rem; margin-top: 5rem;
+    padding-top: 3rem; border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 2.5rem; font-weight: 600; line-height: 1;
+  }
+  .stat-label { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
+
+  /* ── DASHBOARD PREVIEW ── */
+  .preview-section {
+    padding: 2rem 4rem 8rem;
+    position: relative;
+  }
+
+  .dashboard-mockup {
+    background: var(--ink);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(15,14,12,.25);
+    max-width: 1100px; margin: 0 auto;
+    border: 1px solid rgba(255,255,255,.08);
+  }
+
+  .mockup-bar {
+    background: #1a1916;
+    padding: .8rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .dots { display: flex; gap: .5rem; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #ffbd2e; }
+  .dot.g { background: #28c840; }
+
+  .mockup-url {
+    background: rgba(255,255,255,.06);
+    border-radius: .5rem; padding: .3rem 1rem;
+    font-size: .75rem; color: rgba(255,255,255,.4);
+    flex: 1; max-width: 300px;
+  }
+
+  .mockup-body {
+    display: grid; grid-template-columns: 220px 1fr;
+    min-height: 500px;
+  }
+
+  .mock-sidebar {
+    background: #141311;
+    padding: 1.5rem 1rem;
+    border-right: 1px solid rgba(255,255,255,.07);
+  }
+
+  .mock-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem; font-weight: 800;
+    color: #f5f1eb; margin-bottom: 2rem;
+    padding: 0 .5rem;
+  }
+  .mock-logo span { color: #c8441a; }
+
+  .mock-nav-item {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .6rem .75rem; border-radius: .6rem;
+    font-size: .8rem; color: rgba(245,241,235,.45);
+    margin-bottom: .2rem; cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .mock-nav-item.active {
+    background: rgba(200,68,26,.2); color: #e8825a;
+  }
+  .mock-nav-item:hover:not(.active) { background: rgba(255,255,255,.05); color: rgba(245,241,235,.7); }
+  .mock-icon { font-size: 1rem; width: 18px; text-align: center; }
+
+  .mock-main { padding: 2rem; background: #0f0e0c; }
+
+  .mock-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .mock-title { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; color: #f5f1eb; }
+  .mock-btn {
+    background: #c8441a; color: #fff;
+    padding: .4rem 1rem; border-radius: 1rem;
+    font-size: .75rem; font-weight: 500;
+  }
+
+  .mock-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .mock-kpi {
+    background: #1a1916;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: .75rem; padding: 1rem;
+  }
+  .kpi-label { font-size: .7rem; color: rgba(245,241,235,.4); margin-bottom: .4rem; }
+  .kpi-value { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; color: #f5f1eb; }
+  .kpi-delta { font-size: .65rem; color: #6abf69; margin-top: .2rem; }
+
+  .mock-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1rem; }
+  .mock-card {
+    background: #1a1916;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: .75rem; padding: 1.2rem;
+  }
+  .mock-card-title { font-size: .75rem; font-weight: 500; color: rgba(245,241,235,.5); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: .08em; }
+
+  .mock-project { display: flex; justify-content: space-between; align-items: center; margin-bottom: .8rem; }
+  .proj-name { font-size: .8rem; color: #f5f1eb; }
+  .proj-client { font-size: .7rem; color: rgba(245,241,235,.35); }
+  .proj-bar-wrap { width: 80px; height: 4px; background: rgba(255,255,255,.1); border-radius: 2px; }
+  .proj-bar { height: 100%; border-radius: 2px; background: #c8441a; }
+  .proj-pct { font-size: .7rem; color: rgba(245,241,235,.4); margin-left: .5rem; }
+
+  .mock-invoice { display: flex; justify-content: space-between; align-items: center; margin-bottom: .8rem; }
+  .inv-num { font-size: .75rem; color: rgba(245,241,235,.5); }
+  .inv-amount { font-size: .8rem; font-weight: 500; color: #f5f1eb; }
+  .badge { font-size: .65rem; padding: .2rem .6rem; border-radius: 1rem; font-weight: 500; }
+  .badge.paid { background: rgba(106,191,105,.15); color: #6abf69; }
+  .badge.pending { background: rgba(201,168,76,.15); color: #c9a84c; }
+  .badge.overdue { background: rgba(200,68,26,.15); color: #e8825a; }
+
+  /* ── SECTION WRAPPER ── */
+  section { padding: 8rem 4rem; }
+  .section-label {
+    font-size: .8rem; font-weight: 500; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -0.03em; margin-bottom: 1.5rem;
+  }
+  .section-sub { max-width: 52ch; color: var(--muted); line-height: 1.7; font-size: 1.05rem; }
+
+  /* ── FEATURES ── */
+  #features { background: var(--white); }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 1.5rem; margin-top: 5rem;
+  }
+  .feature-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 1.2rem; padding: 2.5rem 2rem;
+    transition: transform .2s, box-shadow .2s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent); transform: scaleX(0); transform-origin: left;
+    transition: transform .3s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(15,14,12,.1); }
+  .feature-card:hover::after { transform: scaleX(1); }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    background: var(--cream); border-radius: .75rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1.5rem;
+  }
+  .feature-card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem; font-weight: 600; margin-bottom: .75rem;
+  }
+  .feature-card p { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+  .feature-tag {
+    display: inline-block; margin-top: 1rem;
+    font-size: .75rem; color: var(--accent); font-weight: 500;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 2rem; margin-top: 5rem; position: relative;
+  }
+  .steps::before {
+    content: '';
+    position: absolute; top: 2rem; left: 10%; right: 10%;
+    height: 1px; background: var(--border);
+  }
+  .step { text-align: center; }
+  .step-num {
+    width: 56px; height: 56px;
+    background: var(--ink); color: var(--paper);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600;
+    margin: 0 auto 1.5rem; position: relative; z-index: 1;
+  }
+  .step h4 { font-family: 'Fraunces', serif; font-size: 1.1rem; margin-bottom: .5rem; }
+  .step p { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── PRICING ── */
+  #pricing { background: var(--ink); color: var(--paper); }
+  #pricing .section-title { color: var(--paper); }
+  #pricing .section-sub { color: rgba(245,241,235,.55); }
+  #pricing .section-label { color: var(--gold); }
+
+  .pricing-toggle {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 2.5rem 0; font-size: .9rem; color: rgba(245,241,235,.55);
+  }
+  .toggle-track {
+    width: 52px; height: 28px;
+    background: var(--accent); border-radius: 14px;
+    padding: 3px; cursor: pointer; transition: background .2s;
+    display: flex; align-items: center;
+  }
+  .toggle-thumb {
+    width: 22px; height: 22px;
+    background: #fff; border-radius: 50%;
+    transition: transform .2s; transform: translateX(24px);
+  }
+  .save-badge {
+    background: rgba(201,168,76,.2); color: var(--gold);
+    padding: .2rem .7rem; border-radius: 1rem; font-size: .75rem; font-weight: 500;
+  }
+
+  .plans {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 1.5rem; margin-top: 2rem;
+  }
+  .plan {
+    background: #1a1916;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 1.5rem; padding: 2.5rem 2rem;
+    position: relative; transition: transform .2s;
+  }
+  .plan:hover { transform: translateY(-4px); }
+  .plan.featured {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .plan-badge {
+    position: absolute; top: -1px; right: 2rem;
+    background: var(--gold); color: var(--ink);
+    font-size: .7rem; font-weight: 700; padding: .3rem .8rem;
+    border-radius: 0 0 .6rem .6rem; text-transform: uppercase; letter-spacing: .05em;
+  }
+
+  .plan-name { font-size: .8rem; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: rgba(245,241,235,.5); margin-bottom: 1rem; }
+  .plan.featured .plan-name { color: rgba(255,255,255,.7); }
+  .plan-price {
+    font-family: 'Fraunces', serif;
+    font-size: 3rem; font-weight: 600; line-height: 1; margin-bottom: .5rem;
+  }
+  .plan-period { font-size: .85rem; color: rgba(245,241,235,.4); margin-bottom: 2rem; }
+  .plan.featured .plan-period { color: rgba(255,255,255,.6); }
+
+  .plan-features { list-style: none; margin-bottom: 2.5rem; }
+  .plan-features li {
+    display: flex; align-items: center; gap: .75rem;
+    font-size: .875rem; color: rgba(245,241,235,.7);
+    padding: .5rem 0; border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .plan.featured .plan-features li { color: rgba(255,255,255,.85); border-bottom-color: rgba(255,255,255,.1); }
+  .plan-features li::before { content: '✓'; color: #6abf69; font-weight: 700; flex-shrink: 0; }
+  .plan.featured .plan-features li::before { color: #fff; }
+
+  .plan-btn {
+    display: block; width: 100%; text-align: center;
+    padding: .9rem; border-radius: 1rem;
+    text-decoration: none; font-weight: 500; font-size: .9rem;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .plan-btn.dark { background: rgba(255,255,255,.08); color: var(--paper); }
+  .plan-btn.dark:hover { background: rgba(255,255,255,.15); }
+  .plan-btn.light { background: #fff; color: var(--accent); }
+  .plan-btn.light:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+
+  /* ── INTEGRATIONS ── */
+  #integrations { background: var(--cream); }
+  .integrations-grid {
+    display: flex; flex-wrap: wrap; gap: 1rem;
+    margin-top: 4rem;
+  }
+  .integration-chip {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 1rem; padding: .75rem 1.5rem;
+    display: flex; align-items: center; gap: .75rem;
+    font-size: .9rem; font-weight: 500;
+    transition: transform .15s, box-shadow .15s;
+    cursor: default;
+  }
+  .integration-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,14,12,.08); }
+  .int-icon { font-size: 1.3rem; }
+  .int-label { color: var(--ink); }
+  .int-sub { font-size: .75rem; color: var(--muted); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 1.5rem; margin-top: 4rem;
+  }
+  .testimonial {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 1.2rem; padding: 2rem;
+  }
+  .testi-stars { color: var(--gold); font-size: 1rem; margin-bottom: 1rem; }
+  .testi-text { font-size: .9rem; line-height: 1.7; color: var(--ink); margin-bottom: 1.5rem; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: .75rem; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--cream); display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem;
+    color: var(--ink);
+  }
+  .testi-name { font-weight: 500; font-size: .875rem; }
+  .testi-role { font-size: .75rem; color: var(--muted); }
+
+  /* ── FAQ ── */
+  #faq { background: var(--white); }
+  .faq-list { margin-top: 4rem; max-width: 800px; }
+  .faq-item { border-bottom: 1px solid var(--border); padding: 1.5rem 0; }
+  .faq-q {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-weight: 500; font-size: 1rem;
+    color: var(--ink);
+  }
+  .faq-q::after { content: '+'; font-size: 1.3rem; color: var(--accent); font-family: 'Fraunces', serif; }
+  .faq-a { font-size: .9rem; color: var(--muted); line-height: 1.7; margin-top: 1rem; display: none; }
+  .faq-item.open .faq-q::after { content: '−'; }
+  .faq-item.open .faq-a { display: block; }
+
+  /* ── CTA BANNER ── */
+  .cta-banner {
+    background: var(--ink); color: var(--paper);
+    text-align: center; padding: 8rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: '';
+    position: absolute; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,68,26,.2), transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  .cta-banner h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 800; line-height: 1.0;
+    margin-bottom: 1.5rem; letter-spacing: -0.04em;
+    position: relative;
+  }
+  .cta-banner p { color: rgba(245,241,235,.55); font-size: 1.1rem; margin-bottom: 3rem; position: relative; }
+  .cta-banner .btn-primary { display: inline-block; position: relative; font-size: 1.1rem; padding: 1.1rem 3rem; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0a0907; color: rgba(245,241,235,.4);
+    padding: 4rem;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr repeat(4,1fr);
+    gap: 3rem; margin-bottom: 3rem;
+  }
+  .footer-brand .logo { display: block; margin-bottom: 1rem; }
+  .footer-brand p { font-size: .85rem; line-height: 1.7; max-width: 28ch; }
+  .footer-col h5 { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: rgba(245,241,235,.6); margin-bottom: 1rem; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: .5rem; }
+  .footer-col ul a { text-decoration: none; color: rgba(245,241,235,.4); font-size: .85rem; transition: color .15s; }
+  .footer-col ul a:hover { color: rgba(245,241,235,.8); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding-top: 2rem; display: flex; justify-content: space-between; align-items: center;
+    font-size: .8rem;
+  }
+
+  /* ── DASHBOARD APP ── */
+  #app { display: none; }
+  #app.active { display: flex; }
+
+  .app-layout {
+    width: 100%; min-height: 100vh;
+    display: flex; background: #0f0e0c;
+  }
+
+  .sidebar {
+    width: 240px; background: #141311;
+    border-right: 1px solid rgba(255,255,255,.07);
+    display: flex; flex-direction: column;
+    padding: 1.5rem 1rem; flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem; font-weight: 800;
+    color: #f5f1eb; padding: 0 .5rem;
+    margin-bottom: 2.5rem;
+  }
+  .sidebar-logo span { color: #c8441a; }
+
+  .sidebar-section { margin-bottom: 2rem; }
+  .sidebar-section-label {
+    font-size: .65rem; text-transform: uppercase; letter-spacing: .12em;
+    color: rgba(245,241,235,.25); padding: 0 .75rem; margin-bottom: .5rem;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .65rem .75rem; border-radius: .6rem;
+    font-size: .85rem; color: rgba(245,241,235,.45);
+    cursor: pointer; transition: all .15s; border: none;
+    background: none; width: 100%; text-align: left;
+    text-decoration: none;
+  }
+  .nav-item.active { background: rgba(200,68,26,.18); color: #e8825a; }
+  .nav-item:hover:not(.active) { background: rgba(255,255,255,.05); color: rgba(245,241,235,.75); }
+  .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; flex-shrink: 0; }
+
+  .sidebar-bottom { margin-top: auto; }
+  .user-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: .75rem; padding: .85rem;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .user-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 600; color: #fff; font-size: .9rem;
+    flex-shrink: 0;
+  }
+  .user-name { font-size: .8rem; font-weight: 500; color: #f5f1eb; }
+  .user-plan { font-size: .7rem; color: rgba(245,241,235,.35); }
+
+  /* ── MAIN CONTENT ── */
+  .main-content {
+    flex: 1; overflow-y: auto;
+    background: #0f0e0c;
+  }
+
+  .page { display: none; padding: 2.5rem 3rem; }
+  .page.active { display: block; }
+
+  .page-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 2.5rem;
+  }
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem; font-weight: 700; color: #f5f1eb;
+    letter-spacing: -0.02em; margin-bottom: .25rem;
+  }
+  .page-sub { font-size: .875rem; color: rgba(245,241,235,.4); }
+
+  .btn {
+    padding: .65rem 1.4rem; border-radius: .75rem;
+    font-size: .85rem; font-weight: 500; cursor: pointer;
+    border: none; transition: all .15s;
+  }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { background: #b33a16; transform: translateY(-1px); }
+  .btn-outline {
+    background: rgba(255,255,255,.06); color: rgba(245,241,235,.7);
+    border: 1px solid rgba(255,255,255,.1);
+  }
+  .btn-outline:hover { background: rgba(255,255,255,.1); }
+
+  /* ── KPI GRID ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
+  .kpi-card {
+    background: #1a1916;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 1rem; padding: 1.5rem;
+  }
+  .kpi-card-label { font-size: .75rem; color: rgba(245,241,235,.4); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .75rem; }
+  .kpi-card-value { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; color: #f5f1eb; line-height: 1; margin-bottom: .4rem; }
+  .kpi-card-delta { font-size: .75rem; display: flex; align-items: center; gap: .3rem; }
+  .delta-up { color: #6abf69; }
+  .delta-down { color: #e8825a; }
+
+  /* ── CARDS ── */
+  .card {
+    background: #1a1916;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 1rem; padding: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .card-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(245,241,235,.35); margin-bottom: 1.2rem; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(245,241,235,.35); text-align: left; padding: .75rem 1rem; border-bottom: 1px solid rgba(255,255,255,.06); }
+  td { padding: .85rem 1rem; font-size: .85rem; color: rgba(245,241,235,.75); border-bottom: 1px solid rgba(255,255,255,.04); }
+  tr:hover td { background: rgba(255,255,255,.025); }
+
+  /* ── STATUS BADGE ── */
+  .status {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .25rem .75rem; border-radius: 2rem; font-size: .7rem; font-weight: 500;
+  }
+  .status::before { content: '●'; font-size: .5rem; }
+  .status.active { background: rgba(106,191,105,.12); color: #6abf69; }
+  .status.pending { background: rgba(201,168,76,.12); color: #c9a84c; }
+  .status.overdue { background: rgba(200,68,26,.12); color: #e8825a; }
+  .status.draft { background: rgba(255,255,255,.06); color: rgba(245,241,235,.4); }
+  .status.paid { background: rgba(106,191,105,.12); color: #6abf69; }
+
+  /* ── PROGRESS ── */
+  .progress-bar { width: 120px; height: 5px; background: rgba(255,255,255,.08); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; }
+
+  /* ── DASHBOARD CHARTS ── */
+  .chart-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+  .chart-placeholder {
+    height: 200px; border-radius: .75rem;
+    background: rgba(255,255,255,.03);
+    border: 1px dashed rgba(255,255,255,.08);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+
+  /* SVG chart bars */
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 130px; padding: 0 1rem; }
+  .bar {
+    flex: 1; background: rgba(200,68,26,.6);
+    border-radius: 4px 4px 0 0;
+    transition: background .2s;
+    position: relative;
+    min-width: 18px;
+  }
+  .bar:hover { background: var(--accent); }
+  .bar-tooltip {
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: #2a2824; color: #f5f1eb; padding: .25rem .6rem;
+    border-radius: .4rem; font-size: .65rem; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity .15s;
+  }
+  .bar:hover .bar-tooltip { opacity: 1; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.7);
+    backdrop-filter: blur(4px); z-index: 1000;
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #1a1916; border: 1px solid rgba(255,255,255,.1);
+    border-radius: 1.25rem; padding: 2rem; width: 480px; max-width: 95vw;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .modal-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: #f5f1eb; }
+  .modal-close { background: none; border: none; color: rgba(245,241,235,.4); font-size: 1.3rem; cursor: pointer; }
+  .form-group { margin-bottom: 1rem; }
+  label { display: block; font-size: .75rem; color: rgba(245,241,235,.4); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .4rem; }
+  input, select, textarea {
+    width: 100%; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1); border-radius: .6rem;
+    padding: .7rem .9rem; color: #f5f1eb; font-size: .875rem;
+    font-family: 'DM Sans', sans-serif; outline: none;
+    transition: border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: #1a1916; }
+  textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1.5rem; }
+
+  /* ── TOAST ── */
+  .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 2000; display: flex; flex-direction: column; gap: .75rem; }
+  .toast {
+    background: #2a2824; border: 1px solid rgba(255,255,255,.12);
+    border-radius: .75rem; padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .75rem;
+    font-size: .85rem; color: #f5f1eb;
+    transform: translateX(120%); transition: transform .3s;
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  }
+  .toast.show { transform: translateX(0); }
+  .toast-icon { font-size: 1rem; }
+
+  /* ── CLIENT CARDS ── */
+  .clients-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
+  .client-card {
+    background: #1a1916; border: 1px solid rgba(255,255,255,.07);
+    border-radius: 1rem; padding: 1.5rem;
+    cursor: pointer; transition: border-color .15s, transform .15s;
+  }
+  .client-card:hover { border-color: rgba(200,68,26,.4); transform: translateY(-2px); }
+  .client-initials {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .client-name { font-weight: 600; font-size: .95rem; color: #f5f1eb; margin-bottom: .2rem; }
+  .client-company { font-size: .8rem; color: rgba(245,241,235,.4); margin-bottom: 1rem; }
+  .client-meta { display: flex; gap: 1.5rem; }
+  .client-meta-item { font-size: .75rem; }
+  .client-meta-item span { display: block; color: rgba(245,241,235,.3); font-size: .65rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .1rem; }
+
+  /* ── LANDING/APP TOGGLE ── */
+  #landing { display: block; }
+  .demo-banner {
+    background: var(--accent); color: #fff;
+    text-align: center; padding: .75rem;
+    font-size: .9rem; font-weight: 500;
+    position: sticky; top: 0; z-index: 200;
+  }
+  .demo-banner a { color: #fff; font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    .hero { padding: 8rem 1.5rem 4rem; }
+    section { padding: 4rem 1.5rem; }
+    .features-grid, .plans, .steps, .testimonials-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .sidebar { display: none; }
+    .page { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ DEMO BANNER ═══ -->
+<div class="demo-banner" id="demoBanner">
+  🚀 Démonstration interactive — <a onclick="showApp()">Accéder au dashboard →</a>
+</div>
+
+<!-- ═══ LANDING PAGE ═══ -->
+<div id="landing">
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Freelance<span>OS</span></a>
+  <ul>
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#pricing">Tarifs</a></li>
+    <li><a href="#integrations">Intégrations</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#" class="nav-cta" onclick="showApp(); return false;">Essai gratuit</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge">Nouveau · Version 2.0 disponible</div>
+  <h1>Gérez votre activité, <em>librement.</em></h1>
+  <p>FreelanceOS centralise vos projets, clients et factures dans un seul outil conçu pour les indépendants. Moins d'administration, plus de création.</p>
+  <div class="hero-actions">
+    <a href="#" class="btn-primary" onclick="showApp(); return false;">Commencer gratuitement →</a>
+    <a href="#features" class="btn-ghost">Voir les fonctionnalités ↓</a>
+  </div>
+  <div class="hero-stats">
+    <div><div class="stat-num">4 200+</div><div class="stat-label">Freelances actifs</div></div>
+    <div><div class="stat-num">98%</div><div class="stat-label">Satisfaction client</div></div>
+    <div><div class="stat-num">3h/sem</div><div class="stat-label">Gain de temps moyen</div></div>
+  </div>
+</section>
+
+<!-- DASHBOARD PREVIEW -->
+<div class="preview-section">
+  <div class="dashboard-mockup">
+    <div class="mockup-bar">
+      <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+      <div class="mockup-url">app.freelanceos.io/dashboard</div>
+    </div>
+    <div class="mockup-body">
+      <div class="mock-sidebar">
+        <div class="mock-logo">Freelance<span>OS</span></div>
+        <div class="mock-nav-item active"><span class="mock-icon">⬛</span> Dashboard</div>
+        <div class="mock-nav-item"><span class="mock-icon">📁</span> Projets</div>
+        <div class="mock-nav-item"><span class="mock-icon">👥</span> Clients</div>
+        <div class="mock-nav-item"><span class="mock-icon">📄</span> Factures</div>
+        <div class="mock-nav-item"><span class="mock-icon">⏱</span> Temps</div>
+        <div class="mock-nav-item"><span class="mock-icon">📊</span> Rapports</div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-header">
+          <div class="mock-title">Bonjour, Sophie 👋</div>
+          <div class="mock-btn">+ Nouvelle facture</div>
+        </div>
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-value">8 450 €</div><div class="kpi-delta">↑ +12%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Projets actifs</div><div class="kpi-value">7</div><div class="kpi-delta">↑ 2 nouveaux</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Factures impayées</div><div class="kpi-value">3 200 €</div><div class="kpi-delta" style="color:#c9a84c">⚠ 2 en attente</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Taux de conversion</div><div class="kpi-value">68%</div><div class="kpi-delta">↑ +5pts</div></div>
+        </div>
+        <div class="mock-grid">
+          <div class="mock-card">
+            <div class="mock-card-title">Projets récents</div>
+            <div class="mock-project"><div><div class="proj-name">Refonte Site E-commerce</div><div class="proj-client">Maison Dupré</div></div><div style="display:flex;align-items:center"><div class="proj-bar-wrap"><div class="proj-bar" style="width:75%"></div></div><div class="proj-pct">75%</div></div></div>
+            <div class="mock-project"><div><div class="proj-name">App Mobile iOS</div><div class="proj-client">TechStart SAS</div></div><div style="display:flex;align-items:center"><div class="proj-bar-wrap"><div class="proj-bar" style="width:40%"></div></div><div class="proj-pct">40%</div></div></div>
+            <div class="mock-project"><div><div class="proj-name">Identité Visuelle</div><div class="proj-client">Café Madeleine</div></div><div style="display:flex;align-items:center"><div class="proj-bar-wrap"><div class="proj-bar" style="width:90%"></div></div><div class="proj-pct">90%</div></div></div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-card-title">Factures récentes</div>
+            <div class="mock-invoice"><div><div class="inv-num">#INV-2024-087</div><div style="font-size:.7rem;color:rgba(245,241,235,.3)">Maison Dupré</div></div><div style="text-align:right"><div class="inv-amount">2 400 €</div><div class="badge paid">Payée</div></div></div>
+            <div class="mock-invoice"><div><div class="inv-num">#INV-2024-088</div><div style="font-size:.7rem;color:rgba(245,241,235,.3)">TechStart SAS</div></div><div style="text-align:right"><div class="inv-amount">1 800 €</div><div class="badge pending">En attente</div></div></div>
+            <div class="mock-invoice"><div><div class="inv-num">#INV-2024-086</div><div style="font-size:.7rem;color:rgba(245,241,235,.3)">Café Madeleine</div></div><div style="text-align:right"><div class="inv-amount">950 €</div><div class="badge overdue">Retard</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">Fonctionnalités</div>
+  <h2 class="section-title">Tout ce dont vous avez besoin, <em style="font-family:Fraunces,serif;font-style:italic">rien de plus.</em></h2>
+  <p class="section-sub">Conçu pour les freelances qui veulent travailler, pas administrer. Chaque fonctionnalité résout un vrai problème.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📁</div>
+      <h3>Gestion de projets</h3>
+      <p>Kanban, jalons, suivi du temps intégré. Visualisez l'avancement de chaque projet et ne manquez plus aucune deadline.</p>
+      <div class="feature-tag">→ Kanban · Timeline · Jalons</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <h3>Facturation intelligente</h3>
+      <p>Créez des devis et factures professionnels en 30 secondes. Relances automatiques, suivi des paiements, exports comptables.</p>
+      <div class="feature-tag">→ PDF · Devis · Relances auto</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>CRM Clients</h3>
+      <p>Centralisez tous vos contacts, l'historique des échanges et les contrats signés. Un client bien suivi, c'est un client qui revient.</p>
+      <div class="feature-tag">→ Contacts · Historique · Notes</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⏱</div>
+      <h3>Suivi du temps</h3>
+      <p>Timer intégré, saisie manuelle ou import depuis vos apps favorites. Transformez vos heures travaillées en factures en un clic.</p>
+      <div class="feature-tag">→ Timer · Rapports · Facturation</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Tableau de bord financier</h3>
+      <p>Revenus mensuels, taux de conversion, projections. Anticipez votre trésorerie et pilotez votre activité avec des données claires.</p>
+      <div class="feature-tag">→ CA · Projections · Export</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>Automatisations</h3>
+      <p>Relances de factures, rappels de jalons, rapports hebdomadaires envoyés automatiquement. Votre assistant administratif virtuel.</p>
+      <div class="feature-tag">→ Emails · Rappels · Webhooks</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="background:var(--cream)">
+  <div class="section-label">Comment ça marche</div>
+  <h2 class="section-title">Opérationnel en 5 minutes.</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><h4>Créez votre compte</h4><p>Inscription en 30 secondes, aucune carte bancaire requise pour l'essai.</p></div>
+    <div class="step"><div class="step-num">2</div><h4>Ajoutez vos clients</h4><p>Importez depuis Gmail, Outlook ou ajoutez-les manuellement en quelques secondes.</p></div>
+    <div class="step"><div class="step-num">3</div><h4>Lancez un projet</h4><p>Définissez les jalons, le budget et invitez vos clients en mode lecture.</p></div>
+    <div class="step"><div class="step-num">4</div><h4>Facturez & encaissez</h4><p>Générez vos factures et recevez vos paiements directement via Stripe.</p></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-label">Tarifs</div>
+  <h2 class="section-title">Simple, transparent, <em style="font-family:Fraunces,serif;font-style:italic">honnête.</em></h2>
+  <p class="section-sub">Pas de surprises. Pas de frais cachés. Changez ou annulez votre plan à tout moment.</p>
+  <div class="pricing-toggle">
+    <span>Mensuel</span>
+    <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    <span>Annuel</span>
+    <div class="save-badge">Économisez 20%</div>
+  </div>
+  <div class="plans">
+    <div class="plan">
+      <div class="plan-name">Essai</div>
+      <div class="plan-price" id="price-free">2 €</div>
+      <div class="plan-period" id="period-free">/ mois · Forfait d'essai · Sans engagement</div>
+      <ul class="plan-features">
+        <li>3 projets actifs</li>
+        <li>5 clients maximum</li>
+        <li>10 factures / mois</li>
+        <li>Tableau de bord essentiel</li>
+        <li>Export PDF basique</li>
+        <li>Support communauté</li>
+      </ul>
+      <a href="#" class="plan-btn dark" onclick="showApp(); return false;">Démarrer pour 2 €/mois</a>
+    </div>
+    <div class="plan featured">
+      <div class="plan-badge">Populaire</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price" id="price-pro">9 €</div>
+      <div class="plan-period" id="period-pro">/ mois · Facturé annuellement · <s style="opacity:.5">12 €</s></div>
+      <ul class="plan-features">
+        <li>Projets illimités</li>
+        <li>Clients illimités</li>
+        <li>Factures illimitées</li>
+        <li>Suivi du temps avancé</li>
+        <li>Relances automatiques</li>
+        <li>Intégrations (Stripe, Notion…)</li>
+        <li>Rapports financiers complets</li>
+        <li>Support prioritaire par email</li>
+      </ul>
+      <a href="#" class="plan-btn light" onclick="showApp(); return false;">Essayer 14 jours gratis →</a>
+    </div>
+    <div class="plan">
+      <div class="plan-name">Business</div>
+      <div class="plan-price" id="price-biz">19 €</div>
+      <div class="plan-period" id="period-biz">/ mois · Facturé annuellement · <s style="opacity:.5">24 €</s></div>
+      <ul class="plan-features">
+        <li>Tout le plan Pro</li>
+        <li>Jusqu'à 5 utilisateurs</li>
+        <li>Portail client personnalisé</li>
+        <li>Signature électronique</li>
+        <li>API & Webhooks</li>
+        <li>Onboarding dédié 1:1</li>
+        <li>SLA 99.9% garanti</li>
+      </ul>
+      <a href="#" class="plan-btn dark" onclick="showApp(); return false;">Démarrer l'essai gratuit</a>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATIONS -->
+<section id="integrations">
+  <div class="section-label">Intégrations</div>
+  <h2 class="section-title">Connectez vos outils préférés.</h2>
+  <p class="section-sub">FreelanceOS s'intègre avec les applications que vous utilisez déjà au quotidien.</p>
+  <div class="integrations-grid">
+    <div class="integration-chip"><span class="int-icon">💳</span><div><div class="int-label">Stripe</div><div class="int-sub">Paiements en ligne</div></div></div>
+    <div class="integration-chip"><span class="int-icon">📧</span><div><div class="int-label">Gmail</div><div class="int-sub">Sync contacts & emails</div></div></div>
+    <div class="integration-chip"><span class="int-icon">📅</span><div><div class="int-label">Google Calendar</div><div class="int-sub">Jalons & deadlines</div></div></div>
+    <div class="integration-chip"><span class="int-icon">🔔</span><div><div class="int-label">Slack</div><div class="int-sub">Notifications équipe</div></div></div>
+    <div class="integration-chip"><span class="int-icon">📝</span><div><div class="int-label">Notion</div><div class="int-sub">Sync documentation</div></div></div>
+    <div class="integration-chip"><span class="int-icon">⏰</span><div><div class="int-label">Toggl</div><div class="int-sub">Import time tracking</div></div></div>
+    <div class="integration-chip"><span class="int-icon">🏦</span><div><div class="int-label">PayPal</div><div class="int-sub">Paiements internationaux</div></div></div>
+    <div class="integration-chip"><span class="int-icon">📊</span><div><div class="int-label">QuickBooks</div><div class="int-sub">Comptabilité</div></div></div>
+    <div class="integration-chip"><span class="int-icon">🔗</span><div><div class="int-label">Zapier</div><div class="int-sub">1000+ automatisations</div></div></div>
+    <div class="integration-chip"><span class="int-icon">🐙</span><div><div class="int-label">GitHub</div><div class="int-sub">Suivi développeurs</div></div></div>
+    <div class="integration-chip"><span class="int-icon">🎨</span><div><div class="int-label">Figma</div><div class="int-sub">Livrables design</div></div></div>
+    <div class="integration-chip"><span class="int-icon">📦</span><div><div class="int-label">Dropbox</div><div class="int-sub">Stockage fichiers</div></div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="section-label">Témoignages</div>
+  <h2 class="section-title">Ils ont repris le contrôle.</h2>
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">«&nbsp;Avant FreelanceOS, je passais 5h par semaine sur ma comptabilité. Maintenant c'est 30 minutes. Les relances automatiques ont réduit mes impayés de 80%.&nbsp;»</p>
+      <div class="testi-author"><div class="testi-avatar">SL</div><div><div class="testi-name">Sophie Lefèvre</div><div class="testi-role">Designer UX/UI · Paris</div></div></div>
+    </div>
+    <div class="testimonial">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">«&nbsp;L'intégration Stripe a changé ma vie. Mes clients paient directement depuis la facture, et l'argent arrive le lendemain. Simple, efficace.&nbsp;»</p>
+      <div class="testi-author"><div class="testi-avatar">TM</div><div><div class="testi-name">Thomas Mercier</div><div class="testi-role">Dev Full-Stack · Lyon</div></div></div>
+    </div>
+    <div class="testimonial">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">«&nbsp;Le CRM clients est exactement ce qu'il me fallait. Je sais en un coup d'oeil où en est chaque relation commerciale. Un outil vraiment pensé pour nous.&nbsp;»</p>
+      <div class="testi-author"><div class="testi-avatar">AB</div><div><div class="testi-name">Amandine Brochard</div><div class="testi-role">Consultante Marketing · Bordeaux</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-title">Questions fréquentes.</h2>
+  <div class="faq-list">
+    <div class="faq-item open">
+      <div class="faq-q" onclick="toggleFaq(this)">Est-ce que je peux annuler à tout moment ?</div>
+      <div class="faq-a">Oui, sans engagement. Vous pouvez annuler votre abonnement à tout moment depuis votre espace compte. Vous conservez l'accès jusqu'à la fin de la période déjà payée.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Mes données sont-elles sécurisées ?</div>
+      <div class="faq-a">FreelanceOS est hébergé en Europe (AWS Frankfurt), conforme RGPD, avec chiffrement AES-256. Vos données vous appartiennent et peuvent être exportées à tout moment.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Puis-je personnaliser mes factures ?</div>
+      <div class="faq-a">Absolument. Ajoutez votre logo, vos couleurs, vos mentions légales et choisissez parmi plusieurs templates. Vos factures reflètent votre image professionnelle.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Le plan Starter est-il vraiment gratuit ?</div>
+      <div class="faq-a">Oui, sans limite de durée. Il est adapté pour démarrer et tester la plateforme. Vous pouvez upgrader vers Pro à tout moment en quelques secondes.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Y a-t-il des frais sur les paiements Stripe ?</div>
+      <div class="faq-a">FreelanceOS ne prend aucune commission. Vous payez uniquement les frais standard Stripe (1.4% + 0.25€ en Europe). C'est tout.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div class="cta-banner">
+  <h2>Prêt à reprendre le<br><em style="font-family:Fraunces,serif;font-style:italic;color:var(--accent)">contrôle ?</em></h2>
+  <p>Rejoignez 4 200 freelances qui gèrent leur activité avec sérénité. Forfait d'essai à 2 €/mois.</p>
+  <a href="#" class="btn-primary" onclick="showApp(); return false;">Commencer gratuitement — 14 jours d'essai</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo">Freelance<span>OS</span></a>
+      <p>L'outil de gestion conçu pour les indépendants qui veulent travailler, pas administrer.</p>
+    </div>
+    <div class="footer-col"><h5>Produit</h5><ul><li><a href="#">Fonctionnalités</a></li><li><a href="#">Tarifs</a></li><li><a href="#">Intégrations</a></li><li><a href="#">Nouveautés</a></li></ul></div>
+    <div class="footer-col"><h5>Ressources</h5><ul><li><a href="#">Documentation</a></li><li><a href="#">Blog</a></li><li><a href="#">Tutoriels</a></li><li><a href="#">API</a></li></ul></div>
+    <div class="footer-col"><h5>Entreprise</h5><ul><li><a href="#">À propos</a></li><li><a href="#">Recrutement</a></li><li><a href="#">Presse</a></li><li><a href="#">Partenaires</a></li></ul></div>
+    <div class="footer-col"><h5>Légal</h5><ul><li><a href="#">CGU</a></li><li><a href="#">Confidentialité</a></li><li><a href="#">RGPD</a></li><li><a href="#">Cookies</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 FreelanceOS · Fait avec ♥ en France</span>
+    <span>🔒 Hébergé en Europe · Conforme RGPD</span>
+  </div>
+</footer>
+
+</div><!-- /landing -->
+
+<!-- ═══════════════════════════════════════════
+     DASHBOARD APP
+═══════════════════════════════════════════ -->
+<div id="app">
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">Freelance<span>OS</span></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <button class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">⬛</span> Dashboard</button>
+      <button class="nav-item" onclick="showPage('projects', this)"><span class="nav-icon">📁</span> Projets</button>
+      <button class="nav-item" onclick="showPage('clients', this)"><span class="nav-icon">👥</span> Clients</button>
+      <button class="nav-item" onclick="showPage('invoices', this)"><span class="nav-icon">📄</span> Factures</button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Outils</div>
+      <button class="nav-item" onclick="showPage('time', this)"><span class="nav-icon">⏱</span> Temps</button>
+      <button class="nav-item" onclick="showPage('reports', this)"><span class="nav-icon">📊</span> Rapports</button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-avatar">SL</div>
+        <div><div class="user-name">Sophie Lefèvre</div><div class="user-plan">Plan Pro ✦</div></div>
+      </div>
+      <button class="nav-item" style="margin-top:.5rem" onclick="showLanding()"><span class="nav-icon">←</span> Retour au site</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div><div class="page-title">Bonjour, Sophie 👋</div><div class="page-sub">Vendredi 24 avril 2026 · Semaine productive !</div></div>
+        <div style="display:flex;gap:.75rem">
+          <button class="btn btn-outline" onclick="openModal('newProject')">+ Projet</button>
+          <button class="btn btn-accent" onclick="openModal('newInvoice')">+ Facture</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-card-label">Revenus ce mois</div><div class="kpi-card-value">8 450 €</div><div class="kpi-card-delta delta-up">↑ +12% vs mois dernier</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Projets actifs</div><div class="kpi-card-value">7</div><div class="kpi-card-delta delta-up">↑ 2 nouveaux</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Impayés</div><div class="kpi-card-value">3 200 €</div><div class="kpi-card-delta" style="color:#c9a84c">⚠ 2 factures en attente</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Heures ce mois</div><div class="kpi-card-value">84h</div><div class="kpi-card-delta delta-down">↓ -3h vs objectif</div></div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="card">
+          <div class="card-title">Revenus mensuels 2024</div>
+          <div class="bar-chart" id="revenueChart"></div>
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:rgba(245,241,235,.25);padding:.5rem 1rem 0">
+            <span>Jan</span><span>Fév</span><span>Mar</span><span>Avr</span><span>Mai</span><span>Jun</span><span>Jul</span><span>Aoû</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Déc</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Répartition clients (CA)</div>
+          <div style="padding:1rem 0">
+            <div style="margin-bottom:.75rem">
+              <div style="display:flex;justify-content:space-between;font-size:.8rem;color:rgba(245,241,235,.7);margin-bottom:.4rem"><span>Maison Dupré</span><span>35%</span></div>
+              <div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px"><div style="height:100%;width:35%;background:#c8441a;border-radius:3px"></div></div>
+            </div>
+            <div style="margin-bottom:.75rem">
+              <div style="display:flex;justify-content:space-between;font-size:.8rem;color:rgba(245,241,235,.7);margin-bottom:.4rem"><span>TechStart SAS</span><span>28%</span></div>
+              <div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px"><div style="height:100%;width:28%;background:#c9a84c;border-radius:3px"></div></div>
+            </div>
+            <div style="margin-bottom:.75rem">
+              <div style="display:flex;justify-content:space-between;font-size:.8rem;color:rgba(245,241,235,.7);margin-bottom:.4rem"><span>Café Madeleine</span><span>20%</span></div>
+              <div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px"><div style="height:100%;width:20%;background:#6abf69;border-radius:3px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:.8rem;color:rgba(245,241,235,.7);margin-bottom:.4rem"><span>Autres</span><span>17%</span></div>
+              <div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px"><div style="height:100%;width:17%;background:rgba(255,255,255,.2);border-radius:3px"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Activité récente</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Action</th><th>Projet</th><th>Client</th><th>Date</th><th>Montant</th></tr></thead>
+            <tbody>
+              <tr><td>💳 Paiement reçu</td><td>Refonte E-commerce</td><td>Maison Dupré</td><td>Aujourd'hui</td><td style="color:#6abf69">+2 400 €</td></tr>
+              <tr><td>📄 Facture envoyée</td><td>App Mobile iOS</td><td>TechStart SAS</td><td>Hier</td><td>1 800 €</td></tr>
+              <tr><td>✅ Jalon validé</td><td>Identité Visuelle</td><td>Café Madeleine</td><td>Il y a 2j</td><td>—</td></tr>
+              <tr><td>👤 Nouveau client</td><td>—</td><td>Studio Lumière</td><td>Il y a 3j</td><td>—</td></tr>
+              <tr><td>⚠ Relance auto</td><td>Site Vitrine</td><td>Boulangerie Martin</td><td>Il y a 5j</td><td>950 €</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROJECTS ── -->
+    <div class="page" id="page-projects">
+      <div class="page-header">
+        <div><div class="page-title">Projets</div><div class="page-sub">7 projets actifs · 2 terminés ce mois</div></div>
+        <button class="btn btn-accent" onclick="openModal('newProject')">+ Nouveau projet</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Projets en cours</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Projet</th><th>Client</th><th>Deadline</th><th>Budget</th><th>Avancement</th><th>Statut</th></tr></thead>
+            <tbody id="projectsTable">
+              <tr><td><strong style="color:#f5f1eb">Refonte Site E-commerce</strong></td><td>Maison Dupré</td><td>15 mai 2024</td><td>4 800 €</td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div><span style="font-size:.75rem;color:rgba(245,241,235,.4)">75%</span></div></td><td><span class="status active">En cours</span></td></tr>
+              <tr><td><strong style="color:#f5f1eb">App Mobile iOS</strong></td><td>TechStart SAS</td><td>30 juin 2024</td><td>12 000 €</td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div><span style="font-size:.75rem;color:rgba(245,241,235,.4)">40%</span></div></td><td><span class="status active">En cours</span></td></tr>
+              <tr><td><strong style="color:#f5f1eb">Identité Visuelle</strong></td><td>Café Madeleine</td><td>1 mai 2024</td><td>2 200 €</td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div><span style="font-size:.75rem;color:rgba(245,241,235,.4)">90%</span></div></td><td><span class="status pending">Révision</span></td></tr>
+              <tr><td><strong style="color:#f5f1eb">Site Vitrine</strong></td><td>Boulangerie Martin</td><td>20 avr. 2024</td><td>1 600 €</td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div><span style="font-size:.75rem;color:rgba(245,241,235,.4)">60%</span></div></td><td><span class="status overdue">En retard</span></td></tr>
+              <tr><td><strong style="color:#f5f1eb">Newsletter Design</strong></td><td>Studio Lumière</td><td>10 mai 2024</td><td>800 €</td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div><span style="font-size:.75rem;color:rgba(245,241,235,.4)">20%</span></div></td><td><span class="status draft">Démarrage</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CLIENTS ── -->
+    <div class="page" id="page-clients">
+      <div class="page-header">
+        <div><div class="page-title">Clients</div><div class="page-sub">12 clients actifs</div></div>
+        <button class="btn btn-accent" onclick="openModal('newClient')">+ Nouveau client</button>
+      </div>
+      <div class="clients-grid" id="clientsGrid">
+        <div class="client-card"><div class="client-initials">MD</div><div class="client-name">Maison Dupré</div><div class="client-company">E-commerce · Paris</div><div class="client-meta"><div class="client-meta-item"><span>CA total</span>14 400 €</div><div class="client-meta-item"><span>Projets</span>3</div><div class="client-meta-item"><span>Statut</span><span class="status active" style="margin:0">Actif</span></div></div></div>
+        <div class="client-card"><div class="client-initials">TS</div><div class="client-name">TechStart SAS</div><div class="client-company">Tech · Lyon</div><div class="client-meta"><div class="client-meta-item"><span>CA total</span>22 000 €</div><div class="client-meta-item"><span>Projets</span>2</div><div class="client-meta-item"><span>Statut</span><span class="status active" style="margin:0">Actif</span></div></div></div>
+        <div class="client-card"><div class="client-initials">CM</div><div class="client-name">Café Madeleine</div><div class="client-company">Restauration · Bordeaux</div><div class="client-meta"><div class="client-meta-item"><span>CA total</span>5 200 €</div><div class="client-meta-item"><span>Projets</span>4</div><div class="client-meta-item"><span>Statut</span><span class="status active" style="margin:0">Actif</span></div></div></div>
+        <div class="client-card"><div class="client-initials">BM</div><div class="client-name">Boulangerie Martin</div><div class="client-company">Artisan · Nantes</div><div class="client-meta"><div class="client-meta-item"><span>CA total</span>2 800 €</div><div class="client-meta-item"><span>Projets</span>1</div><div class="client-meta-item"><span>Statut</span><span class="status pending" style="margin:0">Relance</span></div></div></div>
+        <div class="client-card"><div class="client-initials">SL</div><div class="client-name">Studio Lumière</div><div class="client-company">Photographie · Paris</div><div class="client-meta"><div class="client-meta-item"><span>CA total</span>3 400 €</div><div class="client-meta-item"><span>Projets</span>2</div><div class="client-meta-item"><span>Statut</span><span class="status active" style="margin:0">Actif</span></div></div></div>
+        <div class="client-card" style="border:2px dashed rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="openModal('newClient')"><div style="text-align:center;color:rgba(245,241,235,.25)"><div style="font-size:2rem;margin-bottom:.5rem">+</div><div style="font-size:.85rem">Ajouter un client</div></div></div>
+      </div>
+    </div>
+
+    <!-- ── INVOICES ── -->
+    <div class="page" id="page-invoices">
+      <div class="page-header">
+        <div><div class="page-title">Factures</div><div class="page-sub">3 200 € en attente · 8 450 € encaissés ce mois</div></div>
+        <button class="btn btn-accent" onclick="openModal('newInvoice')">+ Nouvelle facture</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Toutes les factures</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>N°</th><th>Client</th><th>Description</th><th>Date</th><th>Échéance</th><th>Montant</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody id="invoicesTable">
+              <tr><td style="color:rgba(245,241,235,.5)">#INV-2024-088</td><td>Maison Dupré</td><td>Refonte E-commerce — M2</td><td>24 avr.</td><td>8 mai</td><td style="font-weight:600;color:#f5f1eb">2 400 €</td><td><span class="status paid">Payée</span></td><td><button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.7rem">PDF</button></td></tr>
+              <tr><td style="color:rgba(245,241,235,.5)">#INV-2024-087</td><td>TechStart SAS</td><td>App iOS — Sprint 1</td><td>18 avr.</td><td>2 mai</td><td style="font-weight:600;color:#f5f1eb">1 800 €</td><td><span class="status pending">En attente</span></td><td><button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.7rem" onclick="showToast('📧 Relance envoyée à TechStart SAS')">Relancer</button></td></tr>
+              <tr><td style="color:rgba(245,241,235,.5)">#INV-2024-086</td><td>Boulangerie Martin</td><td>Site Vitrine — Acompte</td><td>10 avr.</td><td>24 avr.</td><td style="font-weight:600;color:#f5f1eb">950 €</td><td><span class="status overdue">En retard</span></td><td><button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.7rem;color:#e8825a;border-color:rgba(200,68,26,.3)" onclick="showToast('⚠️ Relance urgente envoyée')">Relancer</button></td></tr>
+              <tr><td style="color:rgba(245,241,235,.5)">#INV-2024-085</td><td>Café Madeleine</td><td>Identité Visuelle — Final</td><td>5 avr.</td><td>19 avr.</td><td style="font-weight:600;color:#f5f1eb">1 200 €</td><td><span class="status paid">Payée</span></td><td><button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.7rem">PDF</button></td></tr>
+              <tr><td style="color:rgba(245,241,235,.5)">#INV-2024-084</td><td>Studio Lumière</td><td>Newsletter — Lots 1-3</td><td>1 avr.</td><td>15 avr.</td><td style="font-weight:600;color:#f5f1eb">800 €</td><td><span class="status draft">Brouillon</span></td><td><button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.7rem" onclick="showToast('📤 Facture envoyée par email')">Envoyer</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TIME TRACKING ── -->
+    <div class="page" id="page-time">
+      <div class="page-header">
+        <div><div class="page-title">Suivi du temps</div><div class="page-sub">84h ce mois · Objectif : 87h</div></div>
+        <button class="btn btn-accent" id="timerBtn" onclick="toggleTimer()">▶ Démarrer le timer</button>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-card-label">Aujourd'hui</div><div class="kpi-card-value" id="todayTime">2h 15m</div><div class="kpi-card-delta delta-up">En cours</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Cette semaine</div><div class="kpi-card-value">18h 30m</div><div class="kpi-card-delta">Objectif 20h</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Ce mois</div><div class="kpi-card-value">84h</div><div class="kpi-card-delta delta-down">-3h vs objectif</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">TJM moyen</div><div class="kpi-card-value">580 €</div><div class="kpi-card-delta delta-up">↑ +5%</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Entrées récentes</div>
+        <table>
+          <thead><tr><th>Projet</th><th>Description</th><th>Date</th><th>Durée</th><th>Facturable</th></tr></thead>
+          <tbody>
+            <tr><td>Refonte E-commerce</td><td>Intégration header + nav</td><td>Aujourd'hui</td><td>2h 15m</td><td style="color:#6abf69">✓ Oui</td></tr>
+            <tr><td>App iOS</td><td>Maquettes onboarding</td><td>Hier</td><td>4h 00m</td><td style="color:#6abf69">✓ Oui</td></tr>
+            <tr><td>Identité Visuelle</td><td>Révisions logo v3</td><td>Hier</td><td>1h 30m</td><td style="color:#6abf69">✓ Oui</td></tr>
+            <tr><td>Admin</td><td>Comptabilité mensuelle</td><td>22 avr.</td><td>1h 00m</td><td style="color:rgba(245,241,235,.3)">✗ Non</td></tr>
+            <tr><td>App iOS</td><td>Réunion client kick-off</td><td>22 avr.</td><td>1h 30m</td><td style="color:#6abf69">✓ Oui</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── REPORTS ── -->
+    <div class="page" id="page-reports">
+      <div class="page-header">
+        <div><div class="page-title">Rapports</div><div class="page-sub">Aperçu de votre activité</div></div>
+        <button class="btn btn-outline" onclick="showToast('📊 Rapport exporté en PDF')">Exporter PDF</button>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-card-label">CA annuel (proj.)</div><div class="kpi-card-value">98 400 €</div><div class="kpi-card-delta delta-up">↑ +22% vs 2023</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Taux de conversion</div><div class="kpi-card-value">68%</div><div class="kpi-card-delta delta-up">↑ +5pts</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Délai moyen paiement</div><div class="kpi-card-value">12j</div><div class="kpi-card-delta delta-up">↓ -3j vs 2023</div></div>
+        <div class="kpi-card"><div class="kpi-card-label">Clients actifs</div><div class="kpi-card-value">12</div><div class="kpi-card-delta delta-up">↑ +4 YTD</div></div>
+      </div>
+      <div class="chart-grid">
+        <div class="card">
+          <div class="card-title">CA mensuel 2024</div>
+          <div class="bar-chart" id="reportChart"></div>
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:rgba(245,241,235,.25);padding:.5rem 1rem 0">
+            <span>Jan</span><span>Fév</span><span>Mar</span><span>Avr</span><span>Mai</span><span>Jun</span><span>Jul</span><span>Aoû</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Déc</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top projets par revenu</div>
+          <div style="padding:.5rem 0">
+            <div class="mock-project" style="border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:1rem;margin-bottom:1rem"><div><div style="font-size:.85rem;color:#f5f1eb;margin-bottom:.25rem">App Mobile iOS</div><div style="font-size:.75rem;color:rgba(245,241,235,.35)">TechStart SAS</div></div><div style="font-family:'Fraunces',serif;font-size:1.1rem;color:#c9a84c">12 000 €</div></div>
+            <div class="mock-project" style="border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:1rem;margin-bottom:1rem"><div><div style="font-size:.85rem;color:#f5f1eb;margin-bottom:.25rem">Refonte E-commerce</div><div style="font-size:.75rem;color:rgba(245,241,235,.35)">Maison Dupré</div></div><div style="font-family:'Fraunces',serif;font-size:1.1rem;color:#c9a84c">4 800 €</div></div>
+            <div class="mock-project"><div><div style="font-size:.85rem;color:#f5f1eb;margin-bottom:.25rem">Identité Visuelle</div><div style="font-size:.75rem;color:rgba(245,241,235,.35)">Café Madeleine</div></div><div style="font-family:'Fraunces',serif;font-size:1.1rem;color:#c9a84c">2 200 €</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div><!-- /app -->
+
+<!-- ═══ MODALS ═══ -->
+<!-- New Project -->
+<div class="modal-overlay" id="modal-newProject">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nouveau projet</div><button class="modal-close" onclick="closeModal('newProject')">✕</button></div>
+    <div class="form-group"><label>Nom du projet</label><input type="text" placeholder="Ex: Refonte site web"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Client</label><select><option>Maison Dupré</option><option>TechStart SAS</option><option>Café Madeleine</option><option>Nouveau client…</option></select></div>
+      <div class="form-group"><label>Budget (€)</label><input type="number" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date début</label><input type="date"></div>
+      <div class="form-group"><label>Deadline</label><input type="date"></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea placeholder="Décrivez le périmètre du projet…"></textarea></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('newProject')">Annuler</button><button class="btn btn-accent" onclick="createProject()">Créer le projet</button></div>
+  </div>
+</div>
+
+<!-- New Invoice -->
+<div class="modal-overlay" id="modal-newInvoice">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nouvelle facture</div><button class="modal-close" onclick="closeModal('newInvoice')">✕</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Client</label><select><option>Maison Dupré</option><option>TechStart SAS</option><option>Café Madeleine</option></select></div>
+      <div class="form-group"><label>Projet lié</label><select><option>Refonte E-commerce</option><option>App iOS</option><option>Identité Visuelle</option></select></div>
+    </div>
+    <div class="form-group"><label>Description</label><input type="text" placeholder="Ex: Développement frontend — Phase 2"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Montant HT (€)</label><input type="number" placeholder="0"></div>
+      <div class="form-group"><label>TVA</label><select><option>0% (auto-entrepreneur)</option><option>20%</option><option>10%</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date d'émission</label><input type="date"></div>
+      <div class="form-group"><label>Échéance paiement</label><select><option>30 jours</option><option>15 jours</option><option>À réception</option><option>60 jours</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('newInvoice')">Annuler</button><button class="btn btn-accent" onclick="createInvoice()">Créer & envoyer</button></div>
+  </div>
+</div>
+
+<!-- New Client -->
+<div class="modal-overlay" id="modal-newClient">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nouveau client</div><button class="modal-close" onclick="closeModal('newClient')">✕</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Prénom</label><input type="text" placeholder="Jean"></div>
+      <div class="form-group"><label>Nom</label><input type="text" placeholder="Dupont"></div>
+    </div>
+    <div class="form-group"><label>Entreprise</label><input type="text" placeholder="Nom de la société"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input type="email" placeholder="jean@exemple.fr"></div>
+      <div class="form-group"><label>Téléphone</label><input type="tel" placeholder="+33 6 00 00 00 00"></div>
+    </div>
+    <div class="form-group"><label>Secteur</label><select><option>Tech / Numérique</option><option>Commerce / E-commerce</option><option>Restauration / Food</option><option>Santé</option><option>Immobilier</option><option>Autre</option></select></div>
+    <div class="form-group"><label>Notes</label><textarea placeholder="Informations supplémentaires…"></textarea></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('newClient')">Annuler</button><button class="btn btn-accent" onclick="createClient()">Ajouter le client</button></div>
+  </div>
+</div>
+
+<!-- ═══ TOASTS ═══ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── LANDING ↔ APP SWITCH ──
+function showApp() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  document.getElementById('demoBanner').style.display = 'none';
+  buildCharts();
+}
+function showLanding() {
+  document.getElementById('landing').style.display = 'block';
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('demoBanner').style.display = 'block';
+}
+
+// ── SIDEBAR NAVIGATION ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── MODALS ──
+function openModal(name) {
+  document.getElementById('modal-' + name).classList.add('open');
+}
+function closeModal(name) {
+  document.getElementById('modal-' + name).classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// ── TOASTS ──
+function showToast(msg, duration = 3000) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="toast-icon">✓</span>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, duration);
+}
+
+// ── CREATE ACTIONS ──
+function createProject() {
+  closeModal('newProject');
+  showToast('📁 Projet créé avec succès !');
+}
+function createInvoice() {
+  closeModal('newInvoice');
+  showToast('📄 Facture envoyée par email au client !');
+}
+function createClient() {
+  closeModal('newClient');
+  showToast('👤 Client ajouté au CRM !');
+}
+
+// ── FAQ TOGGLE ──
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+// ── TIMER ──
+let timerRunning = false, timerInterval, seconds = 8100;
+function toggleTimer() {
+  const btn = document.getElementById('timerBtn');
+  if (!timerRunning) {
+    timerRunning = true;
+    btn.textContent = '⏹ Arrêter (' + formatTime(seconds) + ')';
+    btn.style.background = '#2d5016';
+    timerInterval = setInterval(() => {
+      seconds++;
+      btn.textContent = '⏹ Arrêter (' + formatTime(seconds) + ')';
+    }, 1000);
+  } else {
+    timerRunning = false;
+    clearInterval(timerInterval);
+    btn.textContent = '▶ Démarrer le timer';
+    btn.style.background = '';
+    showToast(`⏱ Session enregistrée : ${formatTime(seconds)}`);
+  }
+}
+function formatTime(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return `${h}h ${String(m).padStart(2,'0')}m`;
+}
+
+// ── BAR CHARTS ──
+const revenues = [5200, 6800, 7100, 8450, 0, 0, 0, 0, 0, 0, 0, 0];
+const labels = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+function buildCharts() {
+  ['revenueChart','reportChart'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    const max = Math.max(...revenues.filter(v => v > 0));
+    revenues.forEach((v, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.height = v ? (v / max * 100) + '%' : '4px';
+      bar.style.opacity = v ? '1' : '0.2';
+      bar.innerHTML = v ? `<div class="bar-tooltip">${labels[i]}: ${v.toLocaleString('fr-FR')} €</div>` : '';
+      el.appendChild(bar);
+    });
+  });
+}
+
+// ── PRICING TOGGLE ──
+const toggle = document.querySelector('.toggle-track');
+let annual = true;
+if (toggle) {
+  toggle.addEventListener('click', () => {
+    annual = !annual;
+    toggle.querySelector('.toggle-thumb').style.transform = annual ? 'translateX(24px)' : 'translateX(0)';
+
+    const pFree  = document.getElementById('price-free');
+    const pPro   = document.getElementById('price-pro');
+    const pBiz   = document.getElementById('price-biz');
+    const perFree = document.getElementById('period-free');
+    const perPro  = document.getElementById('period-pro');
+    const perBiz  = document.getElementById('period-biz');
+
+    if (!annual) {
+      // Mensuel (sans réduction)
+      pFree.textContent  = '2 €';
+      pPro.textContent   = '12 €';
+      pBiz.textContent   = '24 €';
+      perFree.textContent = '/ mois · Sans engagement';
+      perPro.innerHTML   = '/ mois · Sans engagement';
+      perBiz.innerHTML   = '/ mois · Sans engagement';
+    } else {
+      // Annuel (−25%)
+      pFree.textContent  = '2 €';
+      pPro.textContent   = '9 €';
+      pBiz.textContent   = '19 €';
+      perFree.textContent = '/ mois · Forfait d\'essai · Sans engagement';
+      perPro.innerHTML   = '/ mois · Facturé annuellement · <s style="opacity:.5">12 €</s>';
+      perBiz.innerHTML   = '/ mois · Facturé annuellement · <s style="opacity:.5">24 €</s>';
+    }
+  });
+}
+</script>
+</body>
+</html>
